@@ -15,6 +15,7 @@ local function post_yank_motion()
 	vim.api.nvim_win_set_cursor(0, pre_yank_pos)
 end
 
+-- Sets up autocmds for auto=true
 local function setup_autocmds()
 	vim.api.nvim_create_autocmd({ "VimEnter", "CursorMoved" }, {
 		callback = function()
@@ -23,11 +24,17 @@ local function setup_autocmds()
 	})
 	vim.api.nvim_create_autocmd("TextYankPost", {
 		callback = function()
-			post_yank_motion()
+			-- Only restore position after yanked with 'y' operator only
+			-- If not set, text yanked with c will also activate it
+			local operators = { "y" } -- Add more operators here if needed
+			if vim.tbl_contains(operators, vim.v.event.operator) then
+				vim.api.nvim_win_set_cursor(0, pre_yank_pos)
+			end
 		end,
 	})
 end
 
+-- Copy of vim's default yank operator
 local function yank_operator(type)
 	local register = my_register == "" and '"' or my_register
 	local expr
@@ -72,7 +79,7 @@ function M.setup(opts)
 		return "g@"
 	end, { expr = true, noremap = true, silent = true })
 
-	vim.keymap.set("x", "<Plug>(YADefault)", function()
+	vim.keymap.set({ "x", "v" }, "<Plug>(YADefault)", function()
 		vim.cmd("normal! " .. '"' .. vim.v.register .. "y")
 		vim.cmd("normal! `[")
 	end, { noremap = true, silent = true })
@@ -83,7 +90,7 @@ function M.setup(opts)
 		return "g@"
 	end, { expr = true, noremap = true, silent = true })
 
-	vim.keymap.set("x", "<Plug>(YANoMove)", function()
+	vim.keymap.set({ "x", "v" }, "<Plug>(YANoMove)", function()
 		pre_yank_motion()
 		vim.cmd("normal! " .. '"' .. vim.v.register .. "y")
 		post_yank_motion()

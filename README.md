@@ -11,17 +11,17 @@ It is really annoying when you want to yank text and the cursor moves to the sta
 ## Installation
 - with Lazy.nvim
 ``` lua
-    {
-        "svban/YankAssassin.nvim",
-        config = function()
-            require("YankAssassin").setup {
-                auto = true, -- if auto is true, autocmds are used. Whenever y is used anywhere, the cursor doesn't move to start
-            }
-            -- Optional Mappings
-            vim.keymap.set({ "x", "n" }, "gy", "<Plug>(YADefault)", { silent = true })
-            vim.keymap.set({ "x", "n" }, "<leader>y", "<Plug>(YANoMove)", { silent = true })
-        end,
-    },
+{
+    "svban/YankAssassin.nvim",
+    config = function()
+        require("YankAssassin").setup {
+            auto = true, -- if auto is true, autocmds are used. Whenever y is used anywhere, the cursor doesn't move to start
+        }
+        -- Optional Mappings
+        vim.keymap.set({ "x", "n" }, "gy", "<Plug>(YADefault)", { silent = true })
+        vim.keymap.set({ "x", "n" }, "<leader>y", "<Plug>(YANoMove)", { silent = true })
+    end,
+}
 ```
 - or install it, just like you would any other neovim-plugin.
 

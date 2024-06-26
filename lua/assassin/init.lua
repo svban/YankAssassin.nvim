@@ -20,9 +20,9 @@ local function setup_autocmds()
 
 	vim.api.nvim_create_autocmd({ "VimEnter", "CursorMoved" }, {
 		callback = function()
-			if auto then
-				pre_yank_motion()
-			end
+			-- if auto then -- first time using <yamove>  gies error as preyankmotion is not called when auto==false -- fixed it
+			pre_yank_motion()
+			-- end
 		end,
 	})
 	vim.api.nvim_create_autocmd("TextYankPost", {
@@ -34,15 +34,20 @@ local function setup_autocmds()
 	})
 end
 
-function M.my_pre_yank_motion() end
-
 -- Move the cursor to the start - default behavior
-function M.default_yank_operator()
+function M.default_yank_operator(type)
 	-- Save current auto state
 	local prev_auto = auto
 	-- Disable auto behavior
 	auto = false
-	vim.cmd("keepjumps normal!" .. "gv" .. '"' .. vim.v.register .. "y")
+	-- Yank based on the current mode and count
+	if type == "char" then
+		vim.cmd('normal! `[v`]"' .. vim.v.register .. "y")
+	elseif type == "line" then
+		vim.cmd('normal! `[V`]"' .. vim.v.register .. "y")
+	elseif type == "block" then
+		vim.cmd('normal! `[<C-V>`]"' .. vim.v.register .. "y")
+	end
 	-- Move cursor to the beginning of yanked text
 	vim.cmd("normal! `[")
 	-- Restore auto state
@@ -50,13 +55,19 @@ function M.default_yank_operator()
 end
 
 -- Do not move the cursor to the start
-function M.special_yank_operator()
+function M.special_yank_operator(type)
 	-- Save current auto state
 	local prev_auto = auto
 	-- Disable auto behavior
 	auto = true
-	local reg = vim.v.register
-	vim.cmd('normal! gv"' .. reg .. "y")
+	-- Yank based on the current mode and count
+	if type == "char" then
+		vim.cmd('normal! `[v`]"' .. vim.v.register .. "y")
+	elseif type == "line" then
+		vim.cmd('normal! `[V`]"' .. vim.v.register .. "y")
+	elseif type == "block" then
+		vim.cmd('normal! `[<C-V>`]"' .. vim.v.register .. "y")
+	end
 	-- Restore auto state
 	auto = prev_auto
 end
@@ -73,6 +84,7 @@ function M.setup(opts)
 		":set operatorfunc=v:lua.require'assassin'.default_yank_operator<CR>g@",
 		{ noremap = true, silent = true }
 	)
+
 	vim.keymap.set(
 		{ "x", "v" },
 		"<Plug>(YADefault)",

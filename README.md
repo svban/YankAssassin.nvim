@@ -9,7 +9,7 @@ It is really annoying when you want to yank text and the cursor moves to the sta
 ![3](https://user-images.githubusercontent.com/69670983/147871606-bb17d8a6-53b2-4177-ac48-1c677f2f46c3.gif)
 
 ## Installation
-- with Lazy.nvim
+### with Lazy.nvim
 ``` lua
 {
     "svban/YankAssassin.nvim",

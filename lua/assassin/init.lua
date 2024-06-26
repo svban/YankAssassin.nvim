@@ -5,30 +5,28 @@ local pre_yank_pos = {}
 local my_register = ""
 
 -- Function to save the cursor position before yanking
-function M.pre_yank_motion()
+local function pre_yank_motion()
 	pre_yank_pos = vim.api.nvim_win_get_cursor(0)
 	my_register = vim.v.register == "" and '"' or vim.v.register
 end
 
 -- Function to restore the cursor position after yanking
 local function post_yank_motion()
-	local operators = { "y" } -- Add more operators here if needed
-	if vim.tbl_contains(operators, vim.v.event.operator) then
-		vim.api.nvim_win_set_cursor(0, pre_yank_pos)
-	end
+	-- local operators = { "y"} -- Add more operators here if needed
+	-- if vim.tbl_contains(operators, vim.v.event.operator) then
+	vim.api.nvim_win_set_cursor(0, pre_yank_pos)
+	-- end
 end
 
 local function setup_autocmds()
 	vim.api.nvim_create_autocmd({ "VimEnter", "CursorMoved" }, {
 		callback = function()
-			M.pre_yank_motion()
+			pre_yank_motion()
 		end,
 	})
 	vim.api.nvim_create_autocmd("TextYankPost", {
 		callback = function()
-			if auto then
-				post_yank_motion()
-			end
+			post_yank_motion()
 		end,
 	})
 end
@@ -71,9 +69,10 @@ function M.special_yank_operator(type)
 	-- Save current auto state
 	local prev_auto = auto
 	-- Enable auto behavior
-	auto = true
+	auto = false
 	-- Yank based on the current mode and count
 	yank_operator(type)
+	post_yank_motion()
 	-- Restore auto state
 	auto = prev_auto
 end
@@ -82,11 +81,13 @@ function M.setup(opts)
 	opts = opts or {}
 	auto = opts.auto or false
 
-	setup_autocmds()
+	if auto then
+		setup_autocmds()
+	end
 
 	vim.keymap.set("n", "<Plug>(YADefault)", function()
-		M.pre_yank_motion()
-		vim.cmd(":set operatorfunc=v:lua.require'assassin'.default_yank_operator")
+		pre_yank_motion()
+		vim.go.operatorfunc = "v:lua.require'assassin'.default_yank_operator"
 		return "g@"
 	end, { expr = true, noremap = true, silent = true })
 
@@ -99,15 +100,17 @@ function M.setup(opts)
 	end, { noremap = true, silent = true })
 
 	vim.keymap.set("n", "<Plug>(YANoMove)", function()
-		M.pre_yank_motion()
-		vim.cmd(":set operatorfunc=v:lua.require'assassin'.special_yank_operator")
+		pre_yank_motion()
+		vim.go.operatorfunc = "v:lua.require'assassin'.special_yank_operator"
 		return "g@"
 	end, { expr = true, noremap = true, silent = true })
 
 	vim.keymap.set("x", "<Plug>(YANoMove)", function()
 		local prev_auto = auto
-		auto = true
+		auto = false
+		pre_yank_motion()
 		vim.cmd("normal! " .. '"' .. vim.v.register .. "y")
+		post_yank_motion()
 		auto = prev_auto
 	end, { noremap = true, silent = true })
 end

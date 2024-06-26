@@ -1,4 +1,4 @@
-- lua rewrite of [YankAssassin.vim](https://github.com/svban/YankAssassin.vim)
+lua rewrite of [YankAssassin.vim](https://github.com/svban/YankAssassin.vim)
 
 # What is YankAssassin.nvim?
 It is really annoying when you want to yank text and the cursor moves to the start of the yanked text. Especially when you are using text-objects. This plugin helps you fix it. Basically, while Yanking your cursor will not move to the start of the Yanked Text.

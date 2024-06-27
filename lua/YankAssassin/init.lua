@@ -1,6 +1,7 @@
 local M = {}
 
-local auto = false
+local auto_normal = false
+local auto_visual = false
 local pre_yank_pos = {}
 local my_register = ""
 
@@ -15,7 +16,6 @@ local function post_yank_motion()
 	vim.api.nvim_win_set_cursor(0, pre_yank_pos)
 end
 
--- Sets up autocmds for auto=true
 local function setup_autocmds()
 	vim.api.nvim_create_autocmd({ "VimEnter", "CursorMoved" }, {
 		callback = function()
@@ -28,7 +28,10 @@ local function setup_autocmds()
 			-- If not set, text yanked with c will also activate it
 			local operators = { "y" } -- Add more operators here if needed
 			if vim.tbl_contains(operators, vim.v.event.operator) then
-				vim.api.nvim_win_set_cursor(0, pre_yank_pos)
+				local myMode = vim.api.nvim_get_mode().mode
+				if (auto_normal and myMode == "no") or (auto_visual and myMode == "n") then
+					post_yank_motion()
+				end
 			end
 		end,
 	})
@@ -53,23 +56,22 @@ end
 
 -- Move the cursor to the start - default behavior
 function M.default_yank_operator(type)
-	auto = false
 	yank_operator(type)
 	vim.cmd("normal! `[")
 end
 
 -- Do not move the cursor to the start
 function M.special_yank_operator(type)
-	auto = false
 	yank_operator(type)
 	post_yank_motion()
 end
 
 function M.setup(opts)
 	opts = opts or {}
-	auto = opts.auto or false
+	auto_normal = opts.auto_normal or false
+	auto_visual = opts.auto_visual or false
 
-	if auto == true then
+	if auto_normal or auto_visual then
 		setup_autocmds()
 	end
 

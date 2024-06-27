@@ -20,6 +20,7 @@ It is really annoying when you want to yank text and the cursor moves to the sta
         }
         -- Optional Mappings
         vim.keymap.set({ "x", "n" }, "gy", "<Plug>(YADefault)", { silent = true })
+        vim.keymap.set({ "x", "n" }, "gyy", "0<Plug>(YADefault)$", { silent = true })
         vim.keymap.set({ "x", "n" }, "<leader>y", "<Plug>(YANoMove)", { silent = true })
     end,
 }

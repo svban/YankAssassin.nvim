@@ -17,7 +17,10 @@ end
 
 -- Function to restore the cursor position after yanking
 local function post_yank_motion()
-	vim.api.nvim_win_set_cursor(0, pre_yank_pos)
+ if not (pre_yank_pos and #pre_yank_pos == 2) then
+        pre_yank_pos = vim.api.nvim_win_get_cursor(0)
+end
+        vim.api.nvim_win_set_cursor(0, pre_yank_pos)
 end
 
 local function setup_autocmds()

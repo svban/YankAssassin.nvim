@@ -72,7 +72,7 @@ function M.setup(opts)
 	opts = opts or {}
 	auto_normal = opts.auto_normal or false
 	auto_visual = opts.auto_visual or false
-
+	pre_yank_pos = vim.api.nvim_win_get_cursor(0)
 	if auto_normal or auto_visual then
 		setup_autocmds()
 	end

@@ -13,6 +13,7 @@ It is really annoying when you want to yank text and the cursor moves to the sta
 ``` lua
 {
     "svban/YankAssassin.nvim",
+    event = "VeryLazy",
     config = function()
         require("YankAssassin").setup {
             auto_normal = true, -- if true, autocmds are used. Whenever y is used in normal mode, the cursor doesn't move to start

@@ -37,10 +37,10 @@ It is really annoying when you want to yank text and the cursor moves to the sta
 ## Others
 - If you are using Neovim, for Yank highlighting you can use
 ```
-    augroup highlight_yank
-        autocmd!
-        au TextYankPost * silent! lua vim.highlight.on_yank{ higroup="IncSearch", timeout=500 }
-    augroup END
+augroup highlight_yank
+    autocmd!
+    au TextYankPost * silent! lua vim.highlight.on_yank{ higroup="IncSearch", timeout=500 }
+augroup END
 ```
 - If you are using Vim, you can use
 [svban/YankAssassin.vim](https://github.com/svban/YankAssassin.vim)
